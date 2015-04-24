@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    
+    <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/jquery-ui.css" />
+    
+    <script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/jquery.mobile-1.4.5.min.js"></script>
+    
+    <title>PAPELERIA</title>
+    
+    <script type="text/javascript">
+        $(document).ready(function inicio(){
+            
+        var btnGuardar=$("#guardar");
+        btnGuardar.click(function guardar(){
+            var nomPro = $("#nomPro").val();
+            var presen = $("#presen").val();
+            var precio = parseInt($("#precio").val());
+            $.ajax({
+                type:"POST",
+                url:"http://vape2.260mb.net/gardarProductos.php",
+                data:"nombre="+nomPro+"&presentacion="+presen+"&precio="+precio,
+                success: registro
+            });
+            function registro(datos) {
+                alert (datos);
+            }
+        });
+        
+        var btnconsPros = $("#consPros");
+        btnconsPros.click(function consTodos(){
+            $.ajax({
+            type:"POST",
+            url:"http://vape2.260mb.net/consultarTodos.php",
+            data:"",
+            success: todoProductos
+        });
+            
+        function todoProductos(datos){
+        var todosReg=$.parseJSON(datos);   
+        var respuesta=$("#contenido");
+        crearTabla(respuesta, todosReg);
+        }
+        });
+        
+        function crearTabla(respuesta, todosReg){
+            respuesta.html("");
+            respuesta.append('<table id="tab" border="1">');
+            var tabla=$("#tab");
+            tabla.html("<tr><th>ID</th><th>Nombre</th><th>Descripcion</th><th>Precio</th></tr>");
+            for(var i in todosReg){
+                tabla.append("<tr><td>"+todosReg[i].Id_Producto+"</td>"
+                             +"<td>"+todosReg[i].Nombre_Produc+"</td>"
+                             +"<td>"+todosReg[i].Descripcion+"</td>"
+                             +"<td>"+todosReg[i].Precio+"</td></tr>");
+                }
+                tabla.append("</table>");
+                }
+        
+        var btnconsInvi = $("#consInvi");
+        btnconsInvi.click(function consIndividual(){
+        var id = $("#idCons").val();
+        $.ajax({
+            type:"POST",
+            url:"http://vape2.260mb.net/consultaUno.php",
+            data:"Id="+id,
+            success: unProducto
+            });
+        
+        function unProducto(datos) {
+            var unReg=$.parseJSON(datos);
+            var respuesta2=$("#conten");
+            crearTabla(respuesta2, unReg);
+        }
+        });
+        
+        var btnmosTodo = $("#mosTodo");
+        btnmosTodo.click(function todoEliminar(){
+            $.ajax({
+            type:"POST",
+            url:"http://vape2.260mb.net/consultarTodos.php",
+            data:"",
+            success: todoEliminar
+        });
+            
+        function todoEliminar(datos){
+        var todosReg=$.parseJSON(datos);   
+        var respuesta=$("#todoElim");
+        crearTabla(respuesta, todosReg);
+        }
+        });
+        
+        var btnidEliminar = $("#idEliminar");
+        btnidEliminar.click(function proEliminar(){
+        var id = $("#idElimi").val();
+        $.ajax({
+           type:"POST",
+           url:"http://vape2.260mb.net/eliminarProduc.php",
+           data:"Id="+id,
+           success: eliminacion
+        });
+        
+        function eliminacion(datos) {
+            alert(datos);
+        }
+        });
+        
+        var btntodAct = $("#todAct");
+        btntodAct.click(function actDatos(){
+            $.ajax({
+               type:"POST",
+               url:"http://vape2.260mb.net/consultarTodos.php",
+               data:"",
+               success: todosActualizar
+            });
+        function todosActualizar(datos) {
+            var todosRegis=$.parseJSON(datos);
+            var respues=$("#conActuali");
+            crearTabla(respues, todosRegis);
+        }
+        });
+        
+        var btnmosDat = $("#mosDat");
+        btnmosDat.click(function mosDatos(){
+        var Id =  parseInt($("#idActuc").val());
+        $.ajax({
+            type:"POST",
+            url:"http://vape2.260mb.net/consultaUno.php",
+            data:"Id="+Id,
+            success: actuDatos
+            });
+        
+        function actuDatos(datos) {
+            var datActu=$.parseJSON(datos);
+            var respDatos=$("#datMost");
+            
+            respDatos.html("<label>Id:</label><input type='text' id='Id' disabled='yes'>");
+            respDatos.append("<label>Nombre:</label><input type='text' id='nombre'>");
+            respDatos.append("<label>Descripcion:</label><input type='text' id='desc'>");
+            respDatos.append("<label>Precio:</label><input type='text' id='pre'>");
+            
+            var Id=$("#Id");
+            var nombre=$("#nombre");
+            var desc=$("#desc");
+            var pre=$("#pre");
+            
+            for(var i in datActu){
+            Id.val(datActu[i].Id_Producto);
+            nombre.val(datActu[i].Nombre_Produc);
+            desc.val(datActu[i].Descripcion);
+            pre.val(datActu[i].Precio);
+            }
+            }
+            
+            var btnactualDat = $("#actualDat");
+            btnactualDat.click(function actuaDatos(){
+                var ID = parseInt($("#Id").val());
+                var nom = $("#nombre").val();
+                var des = $("#desc").val();
+                var prec = $("#pre").val();
+                if (nom=="" || des=="" || prec=="") {
+                    alert ("ingresar datos en todos los campos");
+                }else{
+                $.ajax({
+                   type:"POST",
+                   url:"http://vape2.260mb.net/actualizar.php",
+                   data:"Id="+ID+"&Nombre="+nom+"&Descripcion="+des+"&Precio="+prec,
+                   success: actualizarDatoss
+                });
+                }
+                function actualizarDatoss(datos) {
+                    alert(datos);
+                }
+            });
+            
+        });
+        
+        });
+    </script>
+    
+    <style type="text/css">
+        p{
+            text-align: center;
+        }
+    </style>
+    
+</head>
+
+<body>
+    
+    <div data-role="page" id="principal">
+        <div data-role="header">
+            <p>Pagina principal</p>
+        </div>
+        <div data-role="content">
+            <div>
+                <ul data-role="listview">
+                   <li><a href="#regPro">Registro de productos</a></li>
+                   <li><a href="#conPros">Consultar productos</a></li>
+                   <li><a href="#conPro">Consultar un producto</a></li>
+                   <li><a href="#eliPro">Eliminar producto</a></li>
+                   <li><a href="#actPro">Actualizar productos</a></li>
+                </ul>
+            </div>
+        </div>
+        <div data-role="footer">
+            <p>Derechos reservados</p>
+        </div>
+    </div>
+
+    <div data-role="page" id="regPro">
+        <div data-role="header">
+            <p>REGISTRO DE PRODUCTOS</p>
+        </div>
+        <div data-role="content">
+            <label for="nomPro">Nombre del producto:</label>
+            <input type="text" id="nomPro">
+            <label for="presen">Presentacion:</label>
+            <input type="text" id="presen">
+            <label for="precio">Precio:</label>
+            <input type="text" id="precio">
+                
+            <input type="button" id="guardar" value="Guardar">
+        </div>
+        <div data-role="footer">
+            <p>Derechos reservados</p>
+        </div>
+    </div>
+    
+    <div data-role="page" id="conPros">
+        <div data-role="header">
+            <p>CONSULTAR TODOS LOS PRODUCTOS</p>
+        </div>
+        <div data-role="content">
+            <input type="button" id="consPros" value="Consultar">
+            <div id="contenido"></div>
+        </div>
+        <div data-role="footer">
+            <p>Derechos reservados</p>
+        </div>
+    </div>
+    
+    <div data-role="page" id="conPro">
+        <div data-role="header">
+            <p>CONSULTAR PRODUCTO INDIVIDUAL</p>
+        </div>
+        <div data-role="content">
+            <label for="idCons">Id a consultar:</label>
+            <input type="text" id="idCons">
+            <input type="button" id="consInvi" value="Consultar">
+            <div id="conten"></div>
+        </div>
+        <div data-role="footer">
+            <p>Derechos reservados</p>
+        </div>
+    </div>
+    
+    <div data-role="page" id="eliPro">
+        <div data-role="header">
+            <p>ELIMINAR PRODUCTO</p>
+        </div>
+        <div data-role="content">
+            <input type="button" id="mosTodo" value="Todos los productos">
+            <div id="todoElim"></div>
+            <label for="idElimi">Id a eliminar</label>
+            <input type="text" id="idElimi">
+            <input type="button" id="idEliminar" value="Eliminar">
+            
+        </div>
+        <div data-role="footer">
+            <p>Derechos reservados</p>
+        </div>
+    </div>
+    
+    <div data-role="page" id="actPro">
+        <div data-role="header">
+            <p>ACTUALIZAR PRODUCTOS</p>
+        </div>
+        <div data-role="content">
+            <input type="button" id="todAct" value="Todos los productos">
+            <div id="conActuali"></div>
+            
+            <label for="idActu">Id a modificar:</label>
+            <input type="text" id="idActuc">
+            <input type="button" id="mosDat" value="Mostrar datos">
+            <div id="datMost"></div>
+            
+            <input type="button" id="actualDat" value="Actualizar">
+            
+        </div>
+        <div data-role="footer">
+            <p>Derechos Reservados</p>
+        </div>
+    </div>
+    
+</body>
+</html>
